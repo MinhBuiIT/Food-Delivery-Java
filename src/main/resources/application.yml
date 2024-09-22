@@ -23,9 +23,9 @@ jwt:
     refresh_token: "ijjywpQ8wc4sEtsc93yCE71hJiyApCdYYwTwJk0YkIekelvHGq4f3xe7egrLK4wzuJMbB3O9Fz1Ms3Eq5Pe1wQT4SZE934qjeqZu"
   expire:
     access_token: 1,
-    refresh_token: 7
+    refresh_token: 700
 
 cloudinary:
-  cloud-name:
-  api-key:
-  secret-key:
+  cloud-name: "devcloudenv"
+  api-key: "433348165569928"
+  secret-key: "oQMCnKb5vcQU5D399saDWEc2Djg"

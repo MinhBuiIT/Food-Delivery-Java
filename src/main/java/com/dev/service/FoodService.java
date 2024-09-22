@@ -210,17 +210,19 @@ public class FoodService {
                 }).collect(Collectors.toSet());;
             }
 
-            List<FoodOptimizeResponse> foodOptimizeResponseList = new ArrayList<>();
+            List<FoodCategoryResponse> foodCategoryResponseList = new ArrayList<>();
             for(Food food:foodsFilter){
                 if(food.isDisable()) {
                     continue;
                 }
-                FoodOptimizeResponse foodOptimizeResponse = foodMapper.toFoodOptimizeResponse(food);
-                foodOptimizeResponseList.add(foodOptimizeResponse);
+                var ingredientFoodLength = food.getIngredients().size();
+                FoodCategoryResponse foodCategoryResponse = foodMapper.toFoodCategoryResponse(food);
+                foodCategoryResponse.setIngredientsNum(ingredientFoodLength);
+                foodCategoryResponseList.add(foodCategoryResponse);
             }
             FoodWithCategoryResponse foodOptimizeResponse = FoodWithCategoryResponse.builder()
                     .category(categoryFood.getName())
-                    .foods(foodOptimizeResponseList)
+                    .foods(foodCategoryResponseList)
                     .build();
             foodResponses.add(foodOptimizeResponse);
         }
@@ -261,6 +263,7 @@ public class FoodService {
             categoryIngredientWithListItems.add(categoryIngredientWithListItem);
         });
         foodIngredientResponse.setIngredients(categoryIngredientWithListItems);
+        foodIngredientResponse.setId(food.getId());
         return foodIngredientResponse;
     }
 }

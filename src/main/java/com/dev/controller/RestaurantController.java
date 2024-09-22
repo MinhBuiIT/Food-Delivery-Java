@@ -104,6 +104,18 @@ public class RestaurantController {
                 .metadata(result)
                 .build();
     }
+    @GetMapping("/total-page")
+    public ResponseSuccess getTotalPageRestaurant(
+            @RequestParam(defaultValue = "1") String page,
+            @RequestParam(defaultValue = "10") String size
+    ) {
+        var result = restaurantService.getTotalPages(Integer.parseInt(page) ,Integer.parseInt(size));
+        return ResponseSuccess.builder()
+                .message("Get total page restaurants success")
+                .code(HttpStatus.OK.value())
+                .metadata(result)
+                .build();
+    }
 
     @GetMapping("/{id}")
     public ResponseSuccess getRestaurant(@PathVariable Long id) {

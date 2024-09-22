@@ -1,5 +1,7 @@
 package com.dev.config;
 
+import com.dev.enums.ErrorEnum;
+import com.dev.exception.AppException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -46,6 +49,7 @@ public class SecurityConfig {
             "/auth/signup",
             "/auth/refresh-token",
             "/restaurant/all",
+            "/restaurant/total-page"
     };
 
     @Bean
@@ -87,7 +91,7 @@ public class SecurityConfig {
             Jwt jwt = jwtDecoder.decode(token);
             var expiresAt = jwt.getExpiresAt();
             if(expiresAt != null && Instant.now().isAfter(expiresAt)) {
-                throw new AuthenticationServiceException("Token has expired");
+                throw new JwtExpiredException("Jwt expired");
             }
             return jwt;
         };
@@ -96,7 +100,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5437"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Collections.singletonList("*"));

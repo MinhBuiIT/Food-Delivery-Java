@@ -42,7 +42,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<Restaurant> findRestaurantBySearch(String s);
 
 
-    @Query("SELECT r from Restaurant r JOIN FETCH r.categoryFoods c where r.id = :id")
+    @Query("SELECT r from Restaurant r JOIN FETCH r.categoryFoods c where r.id = :id order by c.name")
     Optional<Restaurant> findRestaurantWithCategory(Long id);
 
     @Query("SELECT r from Restaurant r JOIN FETCH r.owner o LEFT JOIN FETCH r.orders where o.email = :email")

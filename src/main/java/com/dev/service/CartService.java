@@ -129,14 +129,19 @@ public class CartService {
 
         }else {
             //Ko có Food này trong cart
-            CartItem cartItemRes = (CartItem) cart.getCartItems().toArray()[0];
-            /*log.info("NAME1 " + cartItemRes.getFood().getRestaurant().getName());
-            log.info("NAME2 " + food.getRestaurant().getName());
-            log.info("Result " + (cartItemRes.getFood().getRestaurant().getName() == food.getRestaurant().getName()));*/
-            if(!cartItemRes.getFood().getRestaurant().getName().equals(food.getRestaurant().getName())) {
-                cart.removeAllCartItems();
-                cart.setTotalPrice(0L);
+            Set<CartItem> cartItemSet = cart.getCartItems();
+            if(!cartItemSet.isEmpty()) {
+                CartItem cartItemRes = (CartItem) cartItemSet.toArray()[0];
+                /*log.info("NAME1 " + cartItemRes.getFood().getRestaurant().getName());
+                log.info("NAME2 " + food.getRestaurant().getName());
+                log.info("Result " + (cartItemRes.getFood().getRestaurant().getName() == food.getRestaurant().getName()));*/
+                //nếu đổ ăn nha hàng khác thì xóa
+                if(!cartItemRes.getFood().getRestaurant().getName().equals(food.getRestaurant().getName())) {
+                    cart.removeAllCartItems();
+                    cart.setTotalPrice(0L);
+                }
             }
+
 
 
             CartItem cartItem = cartItemMapper.toCartItemFromRequest(request);

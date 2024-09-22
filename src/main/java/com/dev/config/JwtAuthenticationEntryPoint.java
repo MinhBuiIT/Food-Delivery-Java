@@ -22,7 +22,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             throws IOException, ServletException
     {
         ErrorEnum err = ErrorEnum.UNAUTHENTICATED;
-        if(authException.getMessage().contains("Jwt expired")) {
+        if(authException instanceof JwtExpiredException) {
+            log.info("ABCBJBJB");
             err = ErrorEnum.TOKEN_EXPIRE;
         }
 

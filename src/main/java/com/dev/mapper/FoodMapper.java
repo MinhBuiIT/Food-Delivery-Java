@@ -1,9 +1,6 @@
 package com.dev.mapper;
 
-import com.dev.dto.response.CategoryFoodResponse;
-import com.dev.dto.response.FoodIngredientResponse;
-import com.dev.dto.response.FoodOptimizeResponse;
-import com.dev.dto.response.FoodResponse;
+import com.dev.dto.response.*;
 import com.dev.models.CategoryFood;
 import com.dev.models.Food;
 import org.mapstruct.Mapper;
@@ -20,4 +17,7 @@ public interface FoodMapper {
 
     @Mapping(target = "ingredients",ignore = true)
     FoodIngredientResponse toFoodIngredientResponse(Food food);
+
+    @Mapping(target = "ingredientsNum",ignore = true)
+    FoodCategoryResponse toFoodCategoryResponse(Food food);
 }

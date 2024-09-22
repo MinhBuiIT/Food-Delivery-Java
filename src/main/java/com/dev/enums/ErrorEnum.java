@@ -38,7 +38,7 @@ public enum ErrorEnum {
     ADDRESS_NOT_FOUND(404,"Address not found"),
     ADDRESS_EXIST(400,"Address is exist"),
     ORDER_NOT_FOUND(404,"Order not found"),
-    ORDER_STATUS_INVALID(400,"Order status is invalid")
+    ORDER_STATUS_INVALID(400,"Order status is invalid"),
     ;
     int status;
     String message;

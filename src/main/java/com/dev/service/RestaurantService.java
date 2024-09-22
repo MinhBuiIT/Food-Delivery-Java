@@ -69,11 +69,15 @@ public class RestaurantService {
         }
         var restaurantOwner = restaurantRepository.findByOwnerId(owner.getId()).orElse(null);
         //nếu không tìm thấy owner thì tạo restaurant mới để set owner vào
-        if(restaurantOwner != null) {
-            throw new AppException(ErrorEnum.USER_CREATED_RES);
+        if(restaurantOwner == null) {
+            restaurantOwner = new Restaurant();
+            restaurantOwner.setOwner(owner);
+        }else {
+            if(restaurantOwner.getCreatedAt() != null) {
+                throw new AppException(ErrorEnum.USER_CREATED_RES);
+            }
         }
-        restaurantOwner = new Restaurant();
-        restaurantOwner.setOwner(owner);
+
 
         Set<String> urlList = uploadImg(files, String.valueOf(owner.getId()));
 
@@ -258,6 +262,10 @@ public class RestaurantService {
                 .totalPages(restaurantList.getTotalPages())
                 .build();
 
+    }
+    public Integer getTotalPages(int page,int size) {
+        var restaurantList = restaurantRepository.fetchByRestaurantCreated(PageRequest.of(page - 1,size));
+        return restaurantList.getTotalPages();
     }
 
 
