@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Positive;
 
 public record UpdateQuantityCartItemRequest(
         @NotNull(message = "Food Id must be required")
-        Long foodId,
+        Long cartItemId,
         @Positive(message = "Quantity must be positive")
         Integer quantity
 ) {

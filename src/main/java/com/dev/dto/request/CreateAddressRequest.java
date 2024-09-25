@@ -22,6 +22,9 @@ public record CreateAddressRequest(
         String city,
 
         @NotBlank(message = "PostalCode is required")
-        String postalCode
+        String postalCode,
+
+        @NotBlank(message = "Phone is required")
+        String phone
 ) {
 }

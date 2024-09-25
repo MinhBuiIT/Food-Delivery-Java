@@ -45,9 +45,20 @@ public class CartService {
         Cart cart = cartRepository.findByIdWithCartItem(user.getId()).orElseThrow(() -> new AppException(ErrorEnum.CART_NOT_FOUND));
         Food food = foodRepository.findByIdWithRestaurant(request.foodId()).orElseThrow(() -> new AppException(ErrorEnum.FOOD_NOT_FOUND));
 
+
         if(!food.isAvailable()) {
             throw new AppException(ErrorEnum.FOOD_NOT_AVAILABLE);
         }
+
+        Set<CartItem> cartItems = cart.getCartItems();
+        if(!cartItems.isEmpty()) {
+            Restaurant restaurantCart = cartItems.stream().toList().get(0).getFood().getRestaurant();
+            if(!food.getRestaurant().equals(restaurantCart)) {
+                throw new AppException(ErrorEnum.CART_FOOD_OTHER_RESTAURANT);
+            }
+        }
+
+
 
         var ingredientList = request.ingredientIds().size() > 0 ?
                 ingredientItemRepository.fetchAllByIngredientId(request.ingredientIds()) : new ArrayList<>();
@@ -74,7 +85,6 @@ public class CartService {
                     }
                 }
             }
-
             ingredientItemWithCategory.keySet().forEach(k -> {
                 var value = (ArrayList) ingredientItemWithCategory.get(k);
                 if(value.size() > 1) {
@@ -88,7 +98,7 @@ public class CartService {
         //xử lý khi gửi lên cùng food thì tăng số lương sản pham(cùng ingredient & special instruction)
         boolean isCheckCartItemExist = true;
 
-        CartItem cartItemFood = cart.getCartItems().stream().filter(cartItem -> {
+        CartItem cartItemFood = cartItems.stream().filter(cartItem -> {
             return  cartItem.getFood().getId().equals(food.getId());
         }).findFirst().orElse(null);
         if(cartItemFood == null) {
@@ -174,7 +184,8 @@ public class CartService {
 
         List<CartItemResponse> cartItemResponses = new ArrayList<>();
 
-        for (CartItem cartItem1: cart.getCartItems()) {
+        Set<CartItem> cartItems = cart.getCartItems();
+        for (CartItem cartItem1: cartItems) {
             List<IngredientItemResponse> ingredientItemResponses = new ArrayList<>();
             for (IngredientItem ingredientItem : cartItem1.getIngredients()) {
                 IngredientItemResponse ingredientItemResponse = ingredientItemMapper.toIngredientItemResponse(ingredientItem);
@@ -192,11 +203,17 @@ public class CartService {
             cartItemResponses.add(cartItemResponse);
         }
 
+        CartItem cartItem = cartItems.stream().findFirst().orElse(null);
+
         CartResponse cartResponse = CartResponse.builder()
                 .id(cart.getId())
                 .totalPrice(cart.getTotalPrice())
                 .items(cartItemResponses)
                 .build();
+        if(cartItem != null) {
+            var restaurantId = cartItem.getFood().getRestaurant().getId();
+            cartResponse.setRestaurantId(restaurantId);
+        }
         return cartResponse;
     }
 
@@ -209,7 +226,7 @@ public class CartService {
 
         Set<CartItem> cartItems = cart.getCartItems();
         CartItem cartItemUpdate = cartItems.stream().filter(cartItem -> {
-            return cartItem.getFood().getId().equals(request.foodId());
+            return cartItem.getId().equals(request.cartItemId());
         }).findFirst().orElse(null);
 
         if(cartItemUpdate == null) {

@@ -29,3 +29,14 @@ cloudinary:
   cloud-name: "devcloudenv"
   api-key: "433348165569928"
   secret-key: "oQMCnKb5vcQU5D399saDWEc2Djg"
+payment:
+  vnPay:
+    url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    tmnCode: RR0K04LQ
+    secretKey: ZH6F03N18CQQ2MQ2WWP5BJNI1BONURHM
+    returnUrl: http://localhost:8080/api/v1/payment/vn-pay-callback
+    version: 2.1.0
+    command: pay
+    orderType: other
+client:
+  domain: http://localhost:5173

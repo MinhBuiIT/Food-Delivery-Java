@@ -2,7 +2,10 @@ package com.dev.controller;
 
 import com.dev.core.ResponseSuccess;
 import com.dev.dto.request.CreateAddressRequest;
+import com.dev.enums.ErrorEnum;
+import com.dev.exception.AppException;
 import com.dev.service.AddressService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +23,7 @@ public class AddressController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseSuccess addAddress(
-            @RequestBody CreateAddressRequest request
+            @Valid @RequestBody CreateAddressRequest request
     ) {
        var result = addressService.createAddress(request);
        return ResponseSuccess.builder()
@@ -39,13 +42,27 @@ public class AddressController {
                 .metadata(result)
                 .build();
     }
+    @GetMapping("/me/default")
+    public ResponseSuccess getAddressMeDefault() {
+        var result = addressService.getAddressDefault();
 
-    @DeleteMapping("/{id}")
-    public ResponseSuccess deleteAddress(@PathVariable Long id) {
-        addressService.removeAddress(id);
         return ResponseSuccess.builder()
-                .message("Delete address successful")
+                .message("Get addresses default successful")
+                .code(HttpStatus.OK.value())
+                .metadata(result)
+                .build();
+    }
+
+    @PostMapping("/me/default/{id}")
+    public ResponseSuccess setAddressDefault(
+            @PathVariable Long id
+    ) {
+        addressService.setAddressDefault(id);
+        return ResponseSuccess.builder()
+                .message("Set addresses default successful")
                 .code(HttpStatus.OK.value())
                 .build();
     }
+
+
 }

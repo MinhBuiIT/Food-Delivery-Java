@@ -1,21 +1,30 @@
 package com.dev.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record AddressResponse(
-        Long id,
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AddressResponse {
+    Long id;
 
-        String numberStreet,
+    String numberStreet;
 
-        String street,
+    String street;
 
-        String ward,
+    String ward;
 
-        String district,
+    String district;
 
-        String city,
+    String city;
 
-        String postalCode
-) {
+    String postalCode;
+
+    String phone;
+
+    Boolean addressDefault;
 }

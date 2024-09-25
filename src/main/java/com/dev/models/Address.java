@@ -30,6 +30,12 @@ public class Address {
 
     String postalCode;
 
+    @Column(name = "customer_phone")
+    String customerPhone;
+
+    @Column(name = "customer_default")
+    Boolean customerDefault;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     @JsonIgnore

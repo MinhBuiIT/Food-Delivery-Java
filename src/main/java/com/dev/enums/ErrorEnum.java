@@ -32,11 +32,13 @@ public enum ErrorEnum {
     FOOD_NOT_AVAILABLE(400,"Food isn't available"),
     CART_NOT_FOUND(404,"Cart not found"),
     CART_EMPTY(400,"Cart is empty"),
+    CART_FOOD_OTHER_RESTAURANT(400,"Please clear cart or order before add this food into cart"),
     FOOD_NOT_IN_CART(404,"Food not in cart"),
     INGREDIENTS_INVALID(400,"Ingredients is invalid"),
     INGREDIENT_NOT_STOCK(400,"Ingredient is not stock"),
     ADDRESS_NOT_FOUND(404,"Address not found"),
     ADDRESS_EXIST(400,"Address is exist"),
+    ADDRESS_DEFAULT_NOT_FOUND(404,"Address default not found"),
     ORDER_NOT_FOUND(404,"Order not found"),
     ORDER_STATUS_INVALID(400,"Order status is invalid"),
     ;

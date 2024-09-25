@@ -49,7 +49,8 @@ public class SecurityConfig {
             "/auth/signup",
             "/auth/refresh-token",
             "/restaurant/all",
-            "/restaurant/total-page"
+            "/restaurant/total-page",
+            "/payment/vn-pay-callback"
     };
 
     @Bean

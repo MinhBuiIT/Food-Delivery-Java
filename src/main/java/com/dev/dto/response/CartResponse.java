@@ -11,4 +11,5 @@ public class CartResponse {
     Long id;
     Long totalPrice;
     List<CartItemResponse> items;
+    Long restaurantId;
 }

@@ -10,6 +10,7 @@ import com.dev.models.Address;
 import com.dev.models.User;
 import com.dev.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,8 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -46,12 +46,20 @@ public class AddressService {
                    throw new AppException(ErrorEnum.ADDRESS_EXIST);
             }
         }
+        //Bỏ default các address còn lại
+        for (Address address1: user.getAddresses()) {
+            address1.setCustomerDefault(false);
+        }
 
 
         Address address = addressMapper.toAddress(request);
+        address.setCustomerPhone(request.phone());
+        address.setCustomerDefault(true);
         user.addAddress(address);
         userRepository.save(user);
-        return addressMapper.toAddressResponse(address);
+        AddressResponse addressResponse = addressMapper.toAddressResponse(address);
+        addressResponse.setPhone(request.phone());
+        return addressResponse;
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -62,21 +70,52 @@ public class AddressService {
 
         List<AddressResponse> addresses = new ArrayList<>();
         for (Address address : user.getAddresses()) {
-            addresses.add(addressMapper.toAddressResponse(address));
+            AddressResponse addressResponse = addressMapper.toAddressResponse(address);
+            addressResponse.setPhone(address.getCustomerPhone());
+            addressResponse.setAddressDefault(address.getCustomerDefault());
+            addresses.add(addressResponse);
+
         }
         return addresses;
     }
 
-    @Transactional
     @PreAuthorize("hasRole('USER')")
-    public void removeAddress(Long id) {
+    public AddressResponse getAddressDefault() {
         var email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmailWithAddress(email)
                 .orElseThrow(() -> new AppException(ErrorEnum.NOT_FOUND_USER));
-        Address address = user.getAddresses().stream()
-                .filter(address1 -> address1.getId().equals(id)).findFirst()
-                .orElseThrow(() -> new AppException(ErrorEnum.ADDRESS_NOT_FOUND));
-        user.removeAddress(address);
-        userRepository.save(user);
+
+        Set<Address> addressSet = user.getAddresses();
+        for (Address address : addressSet) {
+            if(address.getCustomerDefault()) {
+                AddressResponse addressResponse = addressMapper.toAddressResponse(address);
+                addressResponse.setPhone(address.getCustomerPhone());
+                addressResponse.setAddressDefault(address.getCustomerDefault());
+                return addressResponse;
+            }
+        }
+        return null;
     }
+
+    @Transactional
+    @PreAuthorize("hasRole('USER')")
+    public void setAddressDefault(Long id) {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmailWithAddress(email)
+                .orElseThrow(() -> new AppException(ErrorEnum.NOT_FOUND_USER));
+        Optional<Address> foundAddress = user.getAddresses().stream().filter(address -> Objects.equals(address.getId(), id)).findFirst();
+        if(foundAddress.isEmpty()) {
+            throw new AppException(ErrorEnum.ADDRESS_NOT_FOUND);
+        }
+        user.getAddresses().forEach(address -> {
+            address.setCustomerDefault(false);
+        });
+        userRepository.save(user);
+
+        Address address = foundAddress.get();
+        address.setCustomerDefault(true);
+
+    }
+
+
 }
