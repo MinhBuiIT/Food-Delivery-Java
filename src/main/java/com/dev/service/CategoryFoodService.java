@@ -47,6 +47,7 @@ public class CategoryFoodService {
         return CategoryFoodResponse.builder().name(name).build();
     }
 
+    @PreAuthorize("hasRole('RESTAURANT')")
     @Transactional
     public CategoryFoodResponse update(String name,Long id) {
         CategoryFood categoryFood = categoryFoodRepository.findById(id).orElse(null);

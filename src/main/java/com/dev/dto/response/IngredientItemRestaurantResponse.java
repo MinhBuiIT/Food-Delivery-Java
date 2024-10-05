@@ -12,5 +12,6 @@ import java.util.List;
 public class IngredientItemRestaurantResponse {
     Long id;
     String name;
+    Boolean pick;
     List<IngredientItemResponse> ingredients;
 }

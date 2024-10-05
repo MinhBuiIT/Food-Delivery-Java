@@ -45,7 +45,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     @Query("SELECT r from Restaurant r JOIN FETCH r.categoryFoods c where r.id = :id order by c.name")
     Optional<Restaurant> findRestaurantWithCategory(Long id);
 
-    @Query("SELECT r from Restaurant r JOIN FETCH r.owner o LEFT JOIN FETCH r.orders where o.email = :email")
+    @Query("SELECT r from Restaurant r JOIN FETCH r.owner o LEFT JOIN FETCH r.orders or left Join or.customer  where o.email = :email")
     Optional<Restaurant> findRestaurantByEmailWithOrders(String email);
 
     @Query("SELECT DISTINCT r FROM Restaurant r " +

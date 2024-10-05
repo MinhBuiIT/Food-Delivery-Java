@@ -2,9 +2,13 @@ package com.dev.models;
 
 import com.dev.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -12,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public class Address {
     @Id
@@ -40,4 +45,8 @@ public class Address {
     @JoinColumn(name = "customer_id")
     @JsonIgnore
     User customer;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Order> orders = new HashSet<>();
 }

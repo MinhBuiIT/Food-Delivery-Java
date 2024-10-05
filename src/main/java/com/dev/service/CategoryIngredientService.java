@@ -37,7 +37,7 @@ public class CategoryIngredientService {
     @Transactional
     public CategoryIngredientResponse create(String name,Boolean pick) {
         var email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Restaurant restaurant = helper.checkCategoryIngredientExist(email, name);
+        Restaurant restaurant = helper.checkCategoryIngredientExist(email, name,pick);
 
 
         CategoryIngredient newCategoryIng = CategoryIngredient.builder()
@@ -58,7 +58,7 @@ public class CategoryIngredientService {
         }
         //Kiểm tra name đã tồn tại chưa
         var email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Restaurant restaurant = helper.checkCategoryIngredientExist(email, name);
+        Restaurant restaurant = helper.checkCategoryIngredientExist(email, name,pick);
 
 
         categoryIng.setName(name);

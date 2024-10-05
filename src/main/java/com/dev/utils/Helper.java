@@ -33,13 +33,13 @@ public class Helper {
         return restaurant;
     }
 
-    public Restaurant checkCategoryIngredientExist(String email,String name) {
+    public Restaurant checkCategoryIngredientExist(String email,String name,Boolean pick) {
         Restaurant restaurant = restaurantRepository.findByOwnerEmailWithCategoryIngredient(email).orElse(null);
         if(restaurant == null) {
             throw new AppException(ErrorEnum.NOT_FOUND_OWNER);
         }
         Optional<CategoryIngredient> checkNameExist = restaurant.getCategoryIngredients().stream()
-                .filter(categoryIngredient -> categoryIngredient.getName().equals(name)).findFirst();
+                .filter(categoryIngredient -> categoryIngredient.getName().equals(name) && categoryIngredient.getPick().equals(pick)).findFirst();
         if(checkNameExist.isPresent()) {
             throw new AppException(ErrorEnum.CATEGORY_INGREDIENT_EXIST);
         }

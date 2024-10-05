@@ -1,6 +1,7 @@
 package com.dev.models;
 
 import com.dev.enums.OrderStatus;
+import com.dev.enums.PaymentEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -33,14 +34,16 @@ public class Order {
     Restaurant restaurant;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address")
     Address address;
 
     Integer totalItem;
     Long totalPrice;
     OrderStatus orderStatus;
     Date createdAt;
+
+    PaymentEnum payment;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<OrderItem> orderItems = new HashSet<>();

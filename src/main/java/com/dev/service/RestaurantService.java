@@ -238,7 +238,7 @@ public class RestaurantService {
 
         Restaurant restaurant = restaurantRepository.findByOwnerId(owner.getId()).orElse(null);
 
-        if(restaurant == null) {
+        if(restaurant == null || restaurant.getCreatedAt() == null) {
             throw new AppException(ErrorEnum.RES_NOT_FOUND);
         }
         var restaurantRes = restaurantMapper.toRestaurantResponse(restaurant);

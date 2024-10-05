@@ -114,6 +114,10 @@ public class IngredientItemService {
         if (ingredientItem == null) {
             throw new AppException(ErrorEnum.INGREDIENT_ITEM_NOT_FOUND);
         }
+        if(!ingredientItem.getFoods().isEmpty()) {
+            throw new AppException(ErrorEnum.INGREDIENT_ITEM_ADDED_FOOD);
+        }
+
         CategoryIngredient categoryIngredient = ingredientItem.getCategoryIngredient();
         categoryIngredient.removeIngredient(ingredientItem);
         //categoryIngredientRepository.save(categoryIngredient);

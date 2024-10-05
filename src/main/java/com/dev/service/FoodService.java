@@ -171,16 +171,36 @@ public class FoodService {
         var foods = restaurant.getFoods().stream().sorted(Comparator.comparing(Food::getCreatedAt).reversed()).toList();
         for(Food food : foods) {
             FoodResponse foodResponse = foodMapper.toFoodResponse(food);
-            foodResponse.setCategoryFood(CategoryFoodResponse.builder().name(food.getCategoryFood().getName()).build());
-            var ingredientResponse = food.getIngredients().stream().map(ingredientItemMapper::toIngredientItemResponse)
-                    .collect(Collectors.toSet());
-            foodResponse.setIngredients(ingredientResponse);
+            CategoryFood categoryFood = food.getCategoryFood();
+            foodResponse.setCategoryFood(CategoryFoodResponse.builder().name(categoryFood.getName()).id(categoryFood.getId()).build());
+//            var ingredientResponse = food.getIngredients().stream().map(ingredientItemMapper::toIngredientItemResponse)
+//                    .collect(Collectors.toSet());
+            foodResponse.setIngredients(null);
             foodResponses.add(foodResponse);
         }
         return foodResponses;
     }
 
-
+    @PreAuthorize("hasRole('RESTAURANT')")
+    public FoodResponse getFoodDetailRestaurant(Long id) {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Restaurant restaurant = restaurantRepository.findByOwnerEmailWithFoods(email).orElse(null);
+        if(restaurant == null) {
+            throw new AppException(ErrorEnum.RES_NOT_FOUND);
+        }
+        Optional<Food> foodOption = restaurant.getFoods().stream().filter(f -> f.getId().equals(id)).findFirst();
+        if(foodOption.isEmpty()) {
+            throw new AppException(ErrorEnum.FOOD_NOT_FOUND);
+        }
+        Food food = foodOption.get();
+        FoodResponse foodResponse = foodMapper.toFoodResponse(food);
+        CategoryFood categoryFood = food.getCategoryFood();
+        foodResponse.setCategoryFood(CategoryFoodResponse.builder().name(categoryFood.getName()).id(categoryFood.getId()).build());
+        var ingredientResponse = food.getIngredients().stream().map(ingredientItemMapper::toIngredientItemResponse)
+                    .collect(Collectors.toSet());
+        foodResponse.setIngredients(ingredientResponse);
+        return foodResponse;
+    }
 
     @PreAuthorize("hasRole('USER')")
     public List<FoodWithCategoryResponse> getRestaurantFoods(

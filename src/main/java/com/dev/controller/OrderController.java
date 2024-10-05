@@ -66,6 +66,18 @@ public class OrderController {
                 .build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseSuccess getOrdersById(
+            @PathVariable("id") Long orderId
+    ) {
+        var result= orderService.getOrderById(orderId);
+        return ResponseSuccess.builder()
+                .message("Get Order Success")
+                .metadata(result)
+                .code(HttpStatus.OK.value())
+                .build();
+    }
+
     @GetMapping("/{status}/restaurant")
     public ResponseSuccess getOrdersRestaurant(
             @PathVariable("status") int status

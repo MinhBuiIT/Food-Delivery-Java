@@ -7,6 +7,7 @@ import java.util.Set;
 
 @Builder
 public record CategoryFoodResponse(
+        Long id,
         String name
 ) {
 }

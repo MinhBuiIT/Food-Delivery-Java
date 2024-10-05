@@ -75,6 +75,16 @@ public class FoodController {
                 .build();
     }
 
+    @GetMapping("/restaurant/{id}/detail")
+    public ResponseSuccess getFoodDetailsRestaurant(@PathVariable Long id) {
+        var result = foodService.getFoodDetailRestaurant(id);
+        return ResponseSuccess.builder()
+                .message("Get Detail Food Restaurant success")
+                .code(HttpStatus.OK.value())
+                .metadata(result)
+                .build();
+    }
+
 
     @GetMapping("/restaurant/{id}")
     public ResponseSuccess getFoodRestaurant(

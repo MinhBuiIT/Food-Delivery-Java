@@ -2,9 +2,7 @@ package com.dev.service;
 
 import com.dev.dto.request.CreateOrderRequest;
 import com.dev.dto.request.UpdateStatusOrderRequest;
-import com.dev.dto.response.IngredientItemResponse;
-import com.dev.dto.response.OrderItemResponse;
-import com.dev.dto.response.OrderResponse;
+import com.dev.dto.response.*;
 import com.dev.enums.ErrorEnum;
 import com.dev.enums.OrderStatus;
 import com.dev.exception.AppException;
@@ -41,6 +39,7 @@ public class OrderService {
     AddressMapper addressMapper;
     OrderItemMapper orderItemMapper;
     IngredientItemMapper ingredientItemMapper;
+    AddressRepository addressRepository;
 
     @Transactional
     @PreAuthorize("hasRole('USER')")
@@ -71,6 +70,7 @@ public class OrderService {
                 .customer(user)
                 .totalPrice(cart.getTotalPrice())
                 .totalItem(cartItems.size())
+                .payment(request.payment())
                 .build();
         Set<OrderItem> orderItems = new HashSet<>();
         for (CartItem cartItem : cartItems) {
@@ -126,6 +126,8 @@ public class OrderService {
         }
 
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorEnum.ORDER_NOT_FOUND));
+
+
         if(request.status() != OrderStatus.CANCELLED.getValue()) {
             if(order.getOrderStatus().getValue() > request.status()) {
                 throw new AppException(ErrorEnum.ORDER_STATUS_INVALID);
@@ -140,12 +142,15 @@ public class OrderService {
     @PreAuthorize("hasRole('USER')")
     public void cancelOrder(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorEnum.ORDER_NOT_FOUND));
+        if(order.getOrderStatus() != OrderStatus.PENDING) {
+            throw new AppException(ErrorEnum.ORDER_HAS_CONFIRMED);
+        }
         order.setOrderStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
     }
 
     @PreAuthorize("hasRole('USER')")
-    public List<OrderResponse> getOrderByUserByStatus(
+    public List<OrderOptimizeResponse> getOrderByUserByStatus(
             int status
     ) {
         var email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -153,13 +158,40 @@ public class OrderService {
                 .orElseThrow(() -> new AppException(ErrorEnum.NOT_FOUND_USER));
 
         Set<Order> orders = user.getOrders();
+        List<Order> sortedOrders = orders.stream()
+                .sorted(Comparator.comparing(Order::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+        var ordersFilter = sortedOrders;
+        if(status >= 0) {
+            ordersFilter = orders.stream().filter(order -> order.getOrderStatus().getValue() == status).toList();
+        }
 
-        var ordersFilter = orders.stream().filter(order -> order.getOrderStatus().getValue() == status)
-                .collect(Collectors.toSet());
 
-        List<OrderResponse> orderResponses = covertOrdersToOrderResponse(ordersFilter);
 
-        return orderResponses;
+        //List<OrderResponse> orderResponses = covertOrdersToOrderResponse(sortedOrders);
+        List<OrderOptimizeResponse> orderOptimizeResponses = new ArrayList<>();
+        for (Order order : ordersFilter) {
+            OrderOptimizeResponse orderOptimizeResponse = new OrderOptimizeResponse();
+            orderOptimizeResponse.setId(order.getId());
+            orderOptimizeResponse.setOrderStatus(order.getOrderStatus());
+            orderOptimizeResponse.setCreatedAt(order.getCreatedAt());
+            orderOptimizeResponse.setRestaurant(order.getRestaurant().getName());
+            orderOptimizeResponse.setTotalPrice(order.getTotalPrice());
+            orderOptimizeResponses.add(orderOptimizeResponse);
+        }
+        return orderOptimizeResponses;
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public OrderResponse getOrderById(Long orderId) {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmailWithOrder(email)
+                .orElseThrow(() -> new AppException(ErrorEnum.NOT_FOUND_USER));
+
+        Set<Order> orders = user.getOrders();
+        Order order = orders.stream().filter(order1 -> order1.getId().equals(orderId)).findFirst().get();
+        return covertOneOrderToOrderResponse(order);
+
     }
 
 
@@ -176,11 +208,14 @@ public class OrderService {
                 .orElseThrow(() -> new AppException(ErrorEnum.RES_NOT_FOUND));
         Set<Order> orders = restaurant.getOrders();
 
-        var ordersFilter = orders;
+        List<Order> sortedOrders = orders.stream()
+                .sorted(Comparator.comparing(Order::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+        var ordersFilter = sortedOrders;
         if(status >= 0) {
-            log.info("STATUS " + status);
-            ordersFilter = orders.stream().filter(order -> order.getOrderStatus().getValue() == status)
-                    .collect(Collectors.toSet());
+            //log.info("STATUS " + status);
+            ordersFilter = sortedOrders.stream().filter(order -> order.getOrderStatus().getValue() == status).toList();
+
         }
 
         List<OrderResponse> orderResponses = covertOrdersToOrderResponse(ordersFilter);
@@ -188,14 +223,16 @@ public class OrderService {
         return orderResponses;
     }
 
-    private List<OrderResponse> covertOrdersToOrderResponse(Set<Order> orders) {
-        List<OrderResponse> orderResponses = new ArrayList<>();
 
-        for (Order order : orders) {
+    private OrderResponse covertOneOrderToOrderResponse(Order order) {
+
             OrderResponse orderResponse = orderMapper.toOrderResponses(order);
             orderResponse.setCustomer(null);
             orderResponse.setRestaurant(order.getRestaurant().getName());
-            orderResponse.setAddress(addressMapper.toAddressResponse(order.getAddress()));
+            Address address = order.getAddress();
+            AddressResponse addressResponse = addressMapper.toAddressResponse(address);
+            addressResponse.setPhone(address.getCustomerPhone());
+            orderResponse.setAddress(addressResponse);
 
             List<OrderItemResponse> orderItemResponses = new ArrayList<>();
             for (OrderItem orderItem : order.getOrderItems()) {
@@ -209,6 +246,20 @@ public class OrderService {
                 orderItemResponses.add(orderItemResponse);
             }
             orderResponse.setOrderItems(orderItemResponses);
+
+        return orderResponse;
+    }
+
+
+
+    private List<OrderResponse> covertOrdersToOrderResponse(List<Order> orders) {
+        List<OrderResponse> orderResponses = new ArrayList<>();
+
+        for (Order order : orders) {
+            User customer = order.getCustomer();
+            UserResponse userResponse = new UserResponse(customer.getId(),customer.getFullName(), customer.getEmail(), null);
+            OrderResponse orderResponse = covertOneOrderToOrderResponse(order);
+            orderResponse.setCustomer(userResponse);
             orderResponses.add(orderResponse);
         }
 

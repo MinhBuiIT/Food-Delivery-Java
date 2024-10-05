@@ -3,7 +3,6 @@ package com.dev.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -25,6 +24,7 @@ public enum ErrorEnum {
     CATEGORY_INGREDIENT_NOT_FOUND(404,"Category ingredient not found"),
     INGREDIENT_ITEM_EXIST(400,"Ingredient item is exist in category item"),
     INGREDIENT_ITEM_NOT_FOUND(404,"Ingredient item not found"),
+    INGREDIENT_ITEM_ADDED_FOOD(400,"Ingredient item has added into food"),
     FOOD_INGREDIENT_INVALID(400,"Ingredient food is invalid"),
     FOOD_EXIST(400,"Food is exist"),
     FOOD_FILE_IMAGE(400,"Image file is invalid"),
@@ -41,6 +41,7 @@ public enum ErrorEnum {
     ADDRESS_DEFAULT_NOT_FOUND(404,"Address default not found"),
     ORDER_NOT_FOUND(404,"Order not found"),
     ORDER_STATUS_INVALID(400,"Order status is invalid"),
+    ORDER_HAS_CONFIRMED(400,"Order has confirmed"),
     ;
     int status;
     String message;
