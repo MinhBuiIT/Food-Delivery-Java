@@ -6,6 +6,7 @@ import com.dev.dto.request.CreateFoodRequest;
 import com.dev.dto.response.*;
 import com.dev.enums.ErrorEnum;
 import com.dev.exception.AppException;
+import com.dev.mapper.EventMapper;
 import com.dev.mapper.FoodMapper;
 import com.dev.mapper.IngredientItemMapper;
 import com.dev.models.*;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,7 @@ public class FoodService {
     FoodMapper foodMapper;
     IngredientItemMapper ingredientItemMapper;
     CategoryIngredientRepository categoryIngredientRepository;
+    EventMapper eventMapper;
 
     @Transactional
     @PreAuthorize("hasRole('RESTAURANT')")
@@ -235,9 +238,17 @@ public class FoodService {
                 if(food.isDisable()) {
                     continue;
                 }
+
                 var ingredientFoodLength = food.getIngredients().size();
                 FoodCategoryResponse foodCategoryResponse = foodMapper.toFoodCategoryResponse(food);
                 foodCategoryResponse.setIngredientsNum(ingredientFoodLength);
+                Event event = food.getEvent();
+                var now = LocalDateTime.now();
+                if(event != null && event.isActive() && event.getStartTime().isBefore(now) && event.getEndTime().isAfter(now)) {
+                    EventResponse eventResponse = eventMapper.toEventResponse(event);
+                    foodCategoryResponse.setEvent(eventResponse);
+                }
+
                 foodCategoryResponseList.add(foodCategoryResponse);
             }
             FoodWithCategoryResponse foodOptimizeResponse = FoodWithCategoryResponse.builder()

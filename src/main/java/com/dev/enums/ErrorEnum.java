@@ -29,6 +29,7 @@ public enum ErrorEnum {
     FOOD_EXIST(400,"Food is exist"),
     FOOD_FILE_IMAGE(400,"Image file is invalid"),
     FOOD_NOT_FOUND(400,"Food not found"),
+    FOOD_INVALID(400,"Food is invalid"),
     FOOD_NOT_AVAILABLE(400,"Food isn't available"),
     CART_NOT_FOUND(404,"Cart not found"),
     CART_EMPTY(400,"Cart is empty"),
@@ -42,6 +43,9 @@ public enum ErrorEnum {
     ORDER_NOT_FOUND(404,"Order not found"),
     ORDER_STATUS_INVALID(400,"Order status is invalid"),
     ORDER_HAS_CONFIRMED(400,"Order has confirmed"),
+    FOOD_HAS_VOUCHER(400,"Food has applied to voucher"),
+    EVENT_TIME_INVALID(400,"Event time is invalid"),
+    EVENT_NOT_FOUND(404,"Event not found")
     ;
     int status;
     String message;

@@ -17,4 +17,5 @@ public class FoodCategoryResponse {
     Set<String> images;
     Boolean available;
     Integer ingredientsNum;
+    EventResponse event;
 }

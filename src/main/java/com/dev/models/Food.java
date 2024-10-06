@@ -62,5 +62,10 @@ public class Food {
     @JsonManagedReference
     Set<IngredientItem> ingredients = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    @JsonBackReference
+    Event event;
+
     boolean disable;
 }

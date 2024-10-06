@@ -72,6 +72,9 @@ public class Restaurant {
     @JsonManagedReference
     Set<CategoryIngredient> categoryIngredients = new HashSet<>();
 
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Event> events = new HashSet<>();
+
     boolean disable;
 
     public void addCategoryFood(CategoryFood categoryFood) {
@@ -82,5 +85,10 @@ public class Restaurant {
     public void addCategoryIngredient(CategoryIngredient categoryIngredient) {
         this.categoryIngredients.add(categoryIngredient);
         categoryIngredient.setRestaurant(this);
+    }
+
+    public void addEvent(Event event) {
+        this.events.add(event);
+        event.setRestaurant(this);
     }
 }

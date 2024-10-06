@@ -6,6 +6,7 @@ import com.dev.dto.response.*;
 import com.dev.enums.ErrorEnum;
 import com.dev.exception.AppException;
 import com.dev.mapper.CartItemMapper;
+import com.dev.mapper.EventMapper;
 import com.dev.mapper.FoodMapper;
 import com.dev.mapper.IngredientItemMapper;
 import com.dev.models.*;
@@ -19,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -34,6 +36,7 @@ public class CartService {
     IngredientItemRepository ingredientItemRepository;
     IngredientItemMapper ingredientItemMapper;
     FoodMapper foodMapper;
+    EventMapper eventMapper;
 
 
     @PreAuthorize("hasRole('USER')")
@@ -191,7 +194,9 @@ public class CartService {
                 IngredientItemResponse ingredientItemResponse = ingredientItemMapper.toIngredientItemResponse(ingredientItem);
                 ingredientItemResponses.add(ingredientItemResponse);
             }
-            FoodOptimizeResponse foodOptimizeResponse = foodMapper.toFoodOptimizeResponse(cartItem1.getFood());
+            Food food = cartItem1.getFood();
+            FoodOptimizeResponse foodOptimizeResponse = foodMapper.toFoodOptimizeResponse(food);
+
             CartItemResponse cartItemResponse = CartItemResponse.builder()
                     .id(cartItem1.getId())
                     .quantity(cartItem1.getQuantity())
@@ -200,6 +205,13 @@ public class CartService {
                     .ingredients(ingredientItemResponses)
                     .totalPrice(cartItem1.getTotalPrice())
                     .build();
+            Event event = food.getEvent();
+            var now = LocalDateTime.now();
+            if(event != null && event.isActive() && event.getStartTime().isBefore(now) && event.getEndTime().isAfter(now)) {
+                EventResponse eventResponse = eventMapper.toEventResponse(event);
+                cartItemResponse.setEvent(eventResponse);
+            }
+
             cartItemResponses.add(cartItemResponse);
         }
 

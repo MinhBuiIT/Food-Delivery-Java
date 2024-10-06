@@ -12,4 +12,5 @@ public class CartResponse {
     Long totalPrice;
     List<CartItemResponse> items;
     Long restaurantId;
+
 }

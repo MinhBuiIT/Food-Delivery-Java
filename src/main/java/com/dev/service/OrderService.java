@@ -4,6 +4,7 @@ import com.dev.dto.request.CreateOrderRequest;
 import com.dev.dto.request.UpdateStatusOrderRequest;
 import com.dev.dto.response.*;
 import com.dev.enums.ErrorEnum;
+import com.dev.enums.EventTypeEnum;
 import com.dev.enums.OrderStatus;
 import com.dev.exception.AppException;
 import com.dev.mapper.*;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,23 +70,43 @@ public class OrderService {
                 .address(address)
                 .restaurant(restaurant)
                 .customer(user)
-                .totalPrice(cart.getTotalPrice())
+                //.totalPrice(cart.getTotalPrice())
                 .totalItem(cartItems.size())
                 .payment(request.payment())
                 .build();
         Set<OrderItem> orderItems = new HashSet<>();
         for (CartItem cartItem : cartItems) {
+            Food food = cartItem.getFood();
+            Event event = food.getEvent();
+            var totalPrice = cartItem.getTotalPrice();
+            var now = LocalDateTime.now();
+            if(event != null && event.isActive() && event.getStartTime().isBefore(now) && event.getEndTime().isAfter(now)) {
+                //log.info(event.getType().toString());
+                if(event.getType() == EventTypeEnum.PERCENT) {
+                    totalPrice = totalPrice - (int)(totalPrice*(event.getPercent()/100.0));
+                  //  log.info("Total Price" + totalPrice.toString());
+                }else {
+                    totalPrice = totalPrice - event.getAmount() * cartItem.getQuantity();
+                }
+            }
+
+
             OrderItem orderItem = OrderItem.builder()
                     .food(cartItem.getFood())
                     .order(order)
                     .quantity(cartItem.getQuantity())
                     .ingredients(new HashSet<>(cartItem.getIngredients()))
                     .specialInstructions(cartItem.getSpecialInstructions())
-                    .totalPrice(cartItem.getTotalPrice())
+                    .totalPrice(totalPrice)
                     .build();
             orderItems.add(orderItem);
         }
+        var totalPriceOrder = 0L;
+        for (OrderItem orderItem : orderItems) {
+            totalPriceOrder += orderItem.getTotalPrice();
+        }
         order.setOrderItems(orderItems);
+        order.setTotalPrice(totalPriceOrder);
         Order newOrder = orderRepository.save(order);
         restaurant.getOrders().add(newOrder);
         user.getOrders().add(newOrder);
