@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -59,10 +60,13 @@ public class EventService {
         }
         for(Food food : foods) {
             Event event = food.getEvent();
-            if(event != null && event.isActive()) {
+            var now = LocalDateTime.now();
+            if(event != null && event.isActive()  && event.getEndTime().isAfter(now)) {
                 throw new AppException(ErrorEnum.FOOD_HAS_VOUCHER);
             }
         }
+        log.info("StartTime: " + request.getStartTime());
+        log.info("EndTime: " + request.getEndTime());
         Event event = Event.builder()
                 .code(generateCode(8))
                 .active(true)

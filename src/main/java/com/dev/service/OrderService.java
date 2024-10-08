@@ -80,7 +80,7 @@ public class OrderService {
             Event event = food.getEvent();
             var totalPrice = cartItem.getTotalPrice();
             var now = LocalDateTime.now();
-            if(event != null && event.isActive() && event.getStartTime().isBefore(now) && event.getEndTime().isAfter(now)) {
+            if(event != null && event.isActive() &&  event.getEndTime().isAfter(now)) {
                 //log.info(event.getType().toString());
                 if(event.getType() == EventTypeEnum.PERCENT) {
                     totalPrice = totalPrice - (int)(totalPrice*(event.getPercent()/100.0));

@@ -23,7 +23,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     {
         ErrorEnum err = ErrorEnum.UNAUTHENTICATED;
         if(authException instanceof JwtExpiredException) {
-            log.info("ABCBJBJB");
+            //log.info("ABCBJBJB");
             err = ErrorEnum.TOKEN_EXPIRE;
         }
 

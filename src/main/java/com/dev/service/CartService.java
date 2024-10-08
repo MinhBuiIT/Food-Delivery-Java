@@ -207,9 +207,11 @@ public class CartService {
                     .build();
             Event event = food.getEvent();
             var now = LocalDateTime.now();
-            if(event != null && event.isActive() && event.getStartTime().isBefore(now) && event.getEndTime().isAfter(now)) {
+            if(event != null && event.isActive() &&  event.getEndTime().isAfter(now)) {
                 EventResponse eventResponse = eventMapper.toEventResponse(event);
                 cartItemResponse.setEvent(eventResponse);
+            }else {
+                cartItemResponse.setEvent(null);
             }
 
             cartItemResponses.add(cartItemResponse);
