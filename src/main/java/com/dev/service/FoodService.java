@@ -268,6 +268,7 @@ public class FoodService {
     public Object getIngredientOfFood(Long id) {
         Food food = foodRepository.findByIdWithIngredients(id)
                 .orElseThrow(() -> new AppException(ErrorEnum.FOOD_NOT_FOUND));
+        Restaurant restaurant = food.getRestaurant();
 
         var ingredientWithCategory = new HashMap<String,List<IngredientItem>>();
         for (IngredientItem ingredientItem : food.getIngredients()) {
@@ -289,7 +290,7 @@ public class FoodService {
         ingredientWithCategory.keySet().stream().forEach(s -> {
             List<IngredientItemFood> ingredientItemFoods = ingredientWithCategory.get(s).stream()
                     .map(ingredientItemMapper::toIngredientItemFood).toList();
-            CategoryIngredient categoryIngredient = categoryIngredientRepository.findByName(s).orElse(null);
+            CategoryIngredient categoryIngredient = categoryIngredientRepository.findByNameAndRestaurantId(s,restaurant.getId()).orElse(null);
             CategoryIngredientWithListItem categoryIngredientWithListItem = CategoryIngredientWithListItem.builder()
                     .ingredientItems(ingredientItemFoods)
                     .categoryIngredient(s)

@@ -21,7 +21,7 @@ public class CategoryIngredient {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    @Column(unique = true)
+    //@Column(unique = true)
     String name;
 
     @OneToMany(mappedBy = "categoryIngredient", cascade = CascadeType.ALL)

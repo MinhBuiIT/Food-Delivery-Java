@@ -248,9 +248,27 @@ public class RestaurantService {
     }
 
     public PaginationResponse getAllRestaurants(int page,int size) {
+        var email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElse(null);
+        Optional<Set<RestaurantDto>> favoritesResUser;
+        if(user != null) {
+            favoritesResUser = Optional.ofNullable(user.getFavorites());
+        } else {
+            favoritesResUser = null;
+        }
+
         var restaurantList = restaurantRepository.fetchByRestaurantCreated(PageRequest.of(page - 1,size));
         List<RestaurantResponse> restaurantResponses = restaurantList.getContent().stream().map(restaurant -> {
             var restaurantRes = restaurantMapper.toRestaurantResponse(restaurant);
+            restaurantRes.setIsLikeUser(false);
+            if(favoritesResUser !=null && favoritesResUser.isPresent()) {
+                if (favoritesResUser.get().stream().anyMatch(restaurantDto -> restaurantDto.getId().equals(restaurant.getId()))) {
+                    restaurantRes.setIsLikeUser(true);
+                }
+            }
+
+
+
             restaurantRes.setOwner(restaurant.getOwner().getFullName());
             restaurantRes.setId(restaurant.getId());
             return restaurantRes;

@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.dev</groupId>
-	<artifactId>Food-Ordering-System</artifactId>
+	<artifactId>Food-Delivery-Java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Food-Ordering-System</name>
-	<description>Food Ordering System</description>
+	<name>Food-Delivery-System</name>
+	<description>Food Delivery System</description>
 
 	<url/>
 	<licenses>

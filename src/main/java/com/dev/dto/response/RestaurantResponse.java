@@ -26,4 +26,6 @@ public class RestaurantResponse{
     Date createdAt;
     Boolean open;
     Long likes;
+    Boolean isLikeUser;
 }
+

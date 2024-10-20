@@ -27,8 +27,8 @@ jwt:
 
 cloudinary:
   cloud-name: "devcloudenv"
-  api-key: "433348165569928"
-  secret-key: "oQMCnKb5vcQU5D399saDWEc2Djg"
+  api-key: "712839726851589"
+  secret-key: "5HTlWj4sNX84FS6e8gFpNh9r6Zw"
 payment:
   vnPay:
     url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
