@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/food_ordering
     username: root
-    password: 12345
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -26,14 +26,14 @@ jwt:
     refresh_token: 700
 
 cloudinary:
-  cloud-name: "devcloudenv"
-  api-key: "712839726851589"
-  secret-key: "5HTlWj4sNX84FS6e8gFpNh9r6Zw"
+  cloud-name:
+  api-key:
+  secret-key:
 payment:
   vnPay:
     url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-    tmnCode: RR0K04LQ
-    secretKey: ZH6F03N18CQQ2MQ2WWP5BJNI1BONURHM
+    tmnCode:
+    secretKey:
     returnUrl: http://localhost:8080/api/v1/payment/vn-pay-callback
     version: 2.1.0
     command: pay
