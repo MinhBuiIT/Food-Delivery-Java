@@ -76,7 +76,7 @@ public class FoodService {
         for (CategoryIngredient categoryIngredient : categoryIngredients) {
             for(String name : request.getIngredients()) {
                 IngredientItem ingredientItem = ingredientItemRepository
-                        .findByNameAndCategoryIngredientName(name, categoryIngredient.getName()).orElse(null);
+                        .findByNameAndCategoryIngredient(name, categoryIngredient.getId()).orElse(null);
                 if(ingredientItem != null) {
                     ingredientItems.add(ingredientItem);
                 }

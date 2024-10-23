@@ -22,7 +22,7 @@ public class CategoryFood {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    @Column(unique = true)
+    //@Column(unique = true)
     String name;
 
     @OneToMany(mappedBy = "categoryFood",cascade = CascadeType.ALL, orphanRemoval = true)

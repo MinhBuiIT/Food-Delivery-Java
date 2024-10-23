@@ -21,8 +21,8 @@ public interface IngredientItemRepository extends JpaRepository<IngredientItem,L
 
     List<IngredientItem> findByCategoryIngredient(CategoryIngredient categoryIngredient);
 
-    @Query("SELECT i FROM IngredientItem i JOIN FETCH i.categoryIngredient c WHERE i.name = :name AND c.name = :categoryName")
-    Optional<IngredientItem> findByNameAndCategoryIngredientName(@Param("name") String name, @Param("categoryName") String categoryName);
+    @Query("SELECT i FROM IngredientItem i JOIN FETCH i.categoryIngredient c WHERE i.name = :name AND c.id = :categoryId")
+    Optional<IngredientItem> findByNameAndCategoryIngredient(@Param("name") String name, @Param("categoryId") Long categoryId);
 
     @Query("SELECT i FROM IngredientItem i JOIN FETCH i.categoryIngredient where i.id in :ids")
     List<IngredientItem> fetchAllByIngredientId(List<Long> ids);
